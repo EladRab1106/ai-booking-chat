@@ -1,0 +1,28 @@
+# Node modules
+node_modules/
+**/node_modules/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Testing
+coverage/
+
+# Build output
+build/
+dist/
+frontend/build/
+frontend/dist/
+backend/build/
+backend/dist/
+
+# Environment files (Security: API keys etc.)
+.env
+.env.*
+frontend/.env
+backend/.env
+
+# System files
+.DS_Store
