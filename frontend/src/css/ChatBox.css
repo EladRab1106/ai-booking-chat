@@ -83,40 +83,43 @@
 }
 
 .chat-msg.typing {
-    opacity: 0.6;
-    font-style: italic;
-    animation: blink 1.4s infinite ease-in-out;
-    padding: 0.4rem;
-  }
-  
-  @keyframes blink {
-    0% { opacity: 0.4; }
-    50% { opacity: 1; }
-    100% { opacity: 0.4; }
-  }
+  opacity: 0.6;
+  font-style: italic;
+  animation: blink 1.4s infinite ease-in-out;
+  padding: 0.4rem;
+}
 
-  .button-options {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
-    gap: 10px;
-    margin-top: 10px;
-    direction: rtl;
+@keyframes blink {
+  0% {
+    opacity: 0.4;
   }
-  
-  .button-options button {
-    padding: 10px;
-    background-color: #4c6ef5;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background-color 0.3s;
-    white-space: nowrap;
+  50% {
+    opacity: 1;
   }
-  
-  .button-options button:hover {
-    background-color: #3b5bdb;
+  100% {
+    opacity: 0.4;
   }
-  
-  
+}
+
+.button-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.button-options button {
+  background-color: #4c5eff;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  white-space: nowrap;
+  transition: background-color 0.2s ease;
+}
+
+.button-options button:hover {
+  background-color: #3b5bdb;
+}

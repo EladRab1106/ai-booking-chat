@@ -1,9 +1,12 @@
 // backend/scripts/seedAppointments.js
 const mongoose = require('mongoose');
-require('dotenv').config({ path: __dirname + '/../.env' }); // ← תיקון חשוב
+require('dotenv').config({ path: __dirname + '/../.env' });
 const Appointment = require('../models/Appointment');
 
 const MONGO_URI = process.env.MONGO_URI;
+
+// ✅ שירותים בעברית בלבד
+const SERVICES = ['החלקה יפנית', 'תספורת עם זקן', 'תספורת לגברים', 'תספורת לנשים', 'תספורת לילדים'];
 
 async function seedAppointments(businessId) {
   if (!businessId) {
@@ -32,14 +35,16 @@ async function seedAppointments(businessId) {
       for (let minute = 0; minute < 60; minute += interval) {
         const time = `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
 
-        appointments.push({
-          business: businessId,
-          customer: null,
-          service: 'תספורת גברים',
-          date: yyyy_mm_dd,
-          time,
-          status: 'available'
-        });
+        for (const service of SERVICES) {
+          appointments.push({
+            business: businessId,
+            customer: null,
+            service,
+            date: yyyy_mm_dd,
+            time,
+            status: 'available',
+          });
+        }
       }
     }
   }

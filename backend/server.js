@@ -7,6 +7,8 @@ dotenv.config();
 const connectDB = require('./db');
 const appointmentRoutes = require('./routes/appointmentRoutes');
 const businessRoutes = require('./routes/businessRoutes');
+const customerRoutes = require('./routes/customerRoutes');
+
 
 const app = express();
 const PORT = process.env.PORT || 5050;
@@ -23,6 +25,8 @@ connectDB();
 
 app.use('/api/appointments', appointmentRoutes);
 app.use('/api/businesses', businessRoutes);
+app.use("/api/customers",customerRoutes);
+
 
 app.get('/', (req, res) => {
   res.send('Welcome to the backend server!');
