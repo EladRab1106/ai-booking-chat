@@ -1,4 +1,6 @@
 const Customer = require('../models/Customer');
+const Appointment = require("../models/Appointment");
+
 
 // יצירת לקוח חדש
 const createCustomer = async (req, res) => {
@@ -80,11 +82,52 @@ const deleteCustomer = async (req, res) => {
   }
 };
 
+
+
+
+const getMostCommonService = async (req, res) => {
+  try {
+    const { phone, businessId } = req.query;
+
+    const customer = await Customer.findOne({ phone, business: businessId });
+
+    if (!customer) {
+      return res.status(200).json({ message: "לקוח לא נמצא", mostCommonService: null });
+    }
+
+    const appointments = await Appointment.find({
+      customer: customer._id,
+      business: businessId,
+      status: "scheduled",
+    });
+
+    if (!appointments.length) {
+      return res.status(200).json({ message: "אין תורים קודמים", mostCommonService: null });
+    }
+
+    const serviceCount = {};
+    for (const appt of appointments) {
+      serviceCount[appt.service] = (serviceCount[appt.service] || 0) + 1;
+    }
+
+    const mostCommonService = Object.entries(serviceCount).sort((a, b) => b[1] - a[1])[0][0];
+
+    res.status(200).json({
+      customerName: customer.name,
+      mostCommonService,
+    });
+  } catch (err) {
+    res.status(500).json({ message: "Failed to get customer", error: err.message });
+  }
+};
+
+
 module.exports = {
   createCustomer,
   getAllCustomers,
   getAllCustomersByBusiness,
   getCustomerById,
   updateCustomer,
-  deleteCustomer
+  deleteCustomer,
+  getMostCommonService
 };

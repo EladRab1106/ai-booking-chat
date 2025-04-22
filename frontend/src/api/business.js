@@ -8,7 +8,10 @@ export const createBusiness = async (businessData) => {
     console.log("🔄 Response from backend:", res.data); // ← חשוב כדי לבדוק את המידע שמוחזר
     return res.data;
   } catch (err) {
-    console.error("❌ Failed to create business:", err.response?.data || err.message);
+    console.error(
+      "❌ Failed to create business:",
+      err.response?.data || err.message
+    );
     throw err;
   }
 };

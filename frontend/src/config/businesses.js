@@ -14,7 +14,6 @@ const businesses = {
         { name: "Men's Haircut", price: 80, duration: 30 },
         { name: "Child's Haircut", price: 80, duration: 30 },
         { name: "Haircut + Beard", price: 90, duration: 40 },
-        { name: "Chen Style Haircut", price: 150, duration: 60 },
         { name: "Japanese Straightening", price: 400, duration: 90 }
       ],
       products: [

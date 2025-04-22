@@ -83,11 +83,22 @@ const deleteAppointment = async (req, res) => {
 const getAvailableAppointments = async (req, res) => {
   try {
     const { businessId } = req.params;
-    const appointments = await Appointment.find({
-      business: businessId,
-      status: 'available'
-    });
+    const { date, service } = req.query;
 
+    const query = {
+      business: businessId,
+      status: 'available',
+    };
+
+    if (date) {
+      query.date = date;
+    }
+
+    if (service) {
+      query.service = service;
+    }
+
+    const appointments = await Appointment.find(query);
     res.status(200).json(appointments);
   } catch (error) {
     res.status(500).json({
@@ -97,25 +108,42 @@ const getAvailableAppointments = async (req, res) => {
   }
 };
 
+
 const bookAppointment = async (req, res) => {
   try {
     const { appointmentId } = req.params;
-    const { name, phone, businessId } = req.body;
+    const { name, phone, businessId, service } = req.body; // ⬅️ קלט שירות מהבקשה
 
     // שלב 1: בדוק אם לקוח קיים
     let customer = await Customer.findOne({ phone, business: businessId });
 
-    // אם לא קיים – צור
     if (!customer) {
       customer = await Customer.create({ name, phone, business: businessId });
     }
 
-    // שלב 2: עדכן את התור
+    // שלב 2: עדכן את התור, כולל השירות הנבחר
     const updated = await Appointment.findByIdAndUpdate(
       appointmentId,
-      { status: 'scheduled', customer: customer._id },
+      {
+        status: 'scheduled',
+        customer: customer._id,
+        service: service || 'לא צויין שירות', // ⬅️ מעדכן את השדה החשוב הזה
+      },
       { new: true }
     );
+
+    // שלב 3: שמור את התור בפרופיל הלקוח
+    await Customer.findByIdAndUpdate(customer._id, {
+      $push: {
+        appointments: {
+          $each: [updated._id],
+          $position: 0,
+          $slice: 10
+        }
+      },
+      $inc: { visits: 1 },
+      $set: { lastVisit: new Date() }
+    });
 
     res.status(200).json(updated);
   } catch (error) {
@@ -125,6 +153,8 @@ const bookAppointment = async (req, res) => {
     });
   }
 };
+;
+
 
 
 
