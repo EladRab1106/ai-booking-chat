@@ -1,0 +1,29 @@
+### 🔐 Register a new business user
+POST http://localhost:5050/api/users/register
+Content-Type: application/json
+
+{
+  "businessName": "Liat Hair Salon",
+  "email": "liat@gmail.com",
+  "password": "123456"
+}
+
+### 🔐 Login and receive access + refresh token
+POST http://localhost:5050/api/users/login
+Content-Type: application/json
+
+{
+  "email": "liat@gmail.com",
+  "password": "123456"
+}
+
+### 🧪 Replace YOUR_ACCESS_TOKEN_HERE after login
+### 👤 Get my profile (protected route)
+GET http://localhost:5050/api/users/me
+Authorization: Bearer YOUR_ACCESS_TOKEN_HERE
+
+### 🔁 Refresh access token using refresh token cookie
+GET http://localhost:5050/api/users/refresh
+
+### 🚪 Logout (clears refresh token)
+POST http://localhost:5050/api/users/logout
