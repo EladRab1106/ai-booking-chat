@@ -3,8 +3,10 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 import HomePage from './pages/HomePage';
 import LiatSalonChat from './pages/Chats/LiatSalonChat';
+import Login from './pages/Login';
 import NavBar from './components/NavBar';
 import { devCreateBusiness } from './utils/devCreateBusiness';
+import Signup from './pages/SignUp';
 
 function App() {
   const handleCreateBusiness = async () => {
@@ -19,12 +21,15 @@ function App() {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/liat-salon" element={<LiatSalonChat />} />
+          <Route path='/log-in' element={<Login/>}/>
+          <Route path='/sign-up' element={<Signup/>}/>
+
         </Routes>
 
         {/* ⚙️ כפתור זמני למפתח בלבד */}
-        <div style={{ position: "fixed", bottom: "20px", right: "20px", zIndex: 1000 }}>
+        {/* <div style={{ position: "fixed", bottom: "20px", right: "20px", zIndex: 1000 }}>
           <button onClick={handleCreateBusiness}>🚀 צור עסק לדוגמה</button>
-        </div>
+        </div> */}
       </div>
     </Router>
   );
