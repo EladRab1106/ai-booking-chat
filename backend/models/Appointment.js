@@ -1,3 +1,4 @@
+// models/Appointment.js
 const mongoose = require('mongoose');
 
 const appointmentSchema = new mongoose.Schema({
@@ -15,12 +16,18 @@ const appointmentSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  servicePrice: {
+    type: Number,
+  },
+  serviceDuration: {
+    type: Number,
+  },
   date: {
-    type: String, // בפורמט yyyy-mm-dd
+    type: String, // yyyy-mm-dd
     required: true,
   },
   time: {
-    type: String, // בפורמט hh:mm
+    type: String, // hh:mm
     required: true,
   },
   status: {
@@ -28,9 +35,10 @@ const appointmentSchema = new mongoose.Schema({
     enum: ['available','scheduled', 'completed', 'canceled'],
     default: 'scheduled',
   },
-  notes: {
-    type: String,
-  }
+  checkInTime: {
+    type: Date,
+  },
+  notes: String,
 }, {
   timestamps: true,
 });

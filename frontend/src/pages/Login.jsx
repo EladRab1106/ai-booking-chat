@@ -1,19 +1,23 @@
 // src/components/Login.jsx
 import React, { useState } from "react";
-import { login } from "../api/authApi";
+import { login as loginAPI } from "../api/authApi"; // שינוי קטן בשם
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext"; // ⬅️ ייבוא ה־useAuth
 
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
+  const { login } = useAuth(); // ⬅️ הוצאנו את login מה־AuthContext
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const accessToken = await login(email, password);
-      localStorage.setItem("accessToken", accessToken);
-      navigate("/liat-salon"); // או כל עמוד שתרצה
+      const accessToken = await loginAPI(email, password);
+      console.log("✅ AccessToken:", accessToken);
+
+      login(accessToken); // ⬅️ קריאה ל־login של ה־context שמעדכן את האפליקציה
+      navigate("/liat-salon"); // 🔁 ניווט אחרי התחברות
     } catch (err) {
       alert("שגיאה בהתחברות. ודא שהפרטים נכונים");
     }

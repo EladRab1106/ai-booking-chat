@@ -8,7 +8,10 @@ const {
   updateAppointmentStatus,
   getAllAppointments,
   getAvailableAppointments,
-  bookAppointment
+  bookAppointment,
+  completeAppointment,
+  checkinAppointment,
+  cancelAppointment
 } = require('../controllers/appointmentController');
 
 // יצירת תור חדש
@@ -25,12 +28,18 @@ router.get('/customer/:customerId', getAppointmentsByCustomer);
 // עדכון סטטוס של תור
 router.patch('/:appointmentId/status', updateAppointmentStatus);
 
+router.patch('/:id/cancel', cancelAppointment);
+
 // מחיקת תור
 router.delete('/:appointmentId', deleteAppointment);
 
 router.get('/business/:businessId/available', getAvailableAppointments);
 
 router.patch('/:appointmentId/book', bookAppointment);
+
+router.post('/checkin', checkinAppointment);
+
+router.patch('/:id/complete', completeAppointment);
 
 
 module.exports = router;
