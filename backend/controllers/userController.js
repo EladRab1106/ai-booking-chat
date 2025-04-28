@@ -31,6 +31,33 @@ const registerUser = async (req, res) => {
   }
 };
 
+const registerToExistingBusiness = async (req, res) => {
+    try {
+      const { businessId, businessName, email, password } = req.body;
+  
+      const existingUser = await User.findOne({ email });
+      if (existingUser) return res.status(400).json({ message: "Email already registered" });
+  
+      const existingBusiness = await Business.findById(businessId);
+      if (!existingBusiness) return res.status(404).json({ message: "Business not found" });
+  
+      const hashedPassword = await bcrypt.hash(password, 10);
+  
+      const newUser = await User.create({
+        businessName,
+        email,
+        password: hashedPassword,
+        businessId: businessId,
+      });
+  
+      res.status(201).json({ message: "User registered successfully to existing business" });
+    } catch (err) {
+      console.error("Register to existing business error:", err);
+      res.status(500).json({ message: err.message || "Server error during registration" });
+    }
+  };
+  
+
 const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -94,25 +121,26 @@ const refreshToken = async (req, res) => {
     res.status(403).json({ message: "Invalid or expired refresh token" });
   }
 };
-
 const logoutUser = async (req, res) => {
-  try {
-    const token = req.cookies.refreshToken;
-    if (!token) return res.sendStatus(204); // אין טוקן? צא בשקט
-
-    const user = await User.findOne({ refreshToken: token });
-    if (user) {
-      user.refreshToken = user.refreshToken.filter(t => t !== token);
-      await user.save();
+    try {
+      const token = req.cookies.refreshToken || req.body.refreshToken; // ⬅️ לוקח מהקוקי או מהבקשה
+  
+      if (!token) return res.sendStatus(204); // אין טוקן? צא בשקט
+  
+      const user = await User.findOne({ refreshToken: token });
+      if (user) {
+        user.refreshToken = user.refreshToken.filter(t => t !== token);
+        await user.save();
+      }
+  
+      res.clearCookie("refreshToken", { httpOnly: true, sameSite: "Lax", secure: false });
+      res.sendStatus(204);
+    } catch (err) {
+      console.error("Logout error:", err.message);
+      res.status(500).json({ message: "Logout failed" });
     }
-
-    res.clearCookie("refreshToken", { httpOnly: true, sameSite: "Lax", secure: false });
-    res.sendStatus(204);
-  } catch (err) {
-    console.error("Logout error:", err.message);
-    res.status(500).json({ message: "Logout failed" });
-  }
-};
+  };
+  
 
 const getMyProfile = async (req, res) => {
   try {
@@ -132,4 +160,5 @@ module.exports = {
   refreshToken,
   logoutUser,
   getMyProfile,
+  registerToExistingBusiness
 };

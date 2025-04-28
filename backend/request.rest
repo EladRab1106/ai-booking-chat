@@ -1,10 +1,20 @@
 ### 🔐 Register a new business user
-POST http://localhost:5050/api/users/register
+POST http://localhost:5050/api/users/login
 Content-Type: application/json
 
 {
-  "businessName": "Liat Hair Salon",
-  "email": "liat@gmail.com",
+  "email": "liat@salon.com",
+  "password": "123456"
+}
+
+### 🔐 Register a user to an existing business
+POST http://localhost:5050/api/users/register-to-existing-business
+Content-Type: application/json
+
+{
+  "businessId": "680670b67b156572c146e9b3", 
+  "businessName": "Liat Salon",
+  "email": "liat@salon.com",
   "password": "123456"
 }
 
@@ -27,3 +37,20 @@ GET http://localhost:5050/api/users/refresh
 
 ### 🚪 Logout (clears refresh token)
 POST http://localhost:5050/api/users/logout
+
+### 🔐 Login as eladrabinovitch1106@gmail.com
+POST http://localhost:5050/api/users/login
+Content-Type: application/json
+
+{
+  "email": "eladrabinovitch1106@gmail.com",
+  "password": "12131415Ee"
+}
+
+### 🚪 Logout with refreshToken manually
+POST http://localhost:5050/api/users/logout
+Content-Type: application/json
+
+{
+  "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODBjZTJkZWViNzZmZmVjOWQ4Yjk5MTQiLCJpYXQiOjE3NDU2NzUyNzMsImV4cCI6MTc0NjI4MDA3M30.ONSJhI-ub-YXjkVleU_Rjei6DnxdVz9emh6Aq-Mi2gE"
+}

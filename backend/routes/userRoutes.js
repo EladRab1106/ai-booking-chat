@@ -6,6 +6,9 @@ const { verifyToken } = require("../middleware/auth");
 // רישום משתמש חדש
 router.post("/register", userController.registerUser);
 
+router.post("/register-to-existing-business", userController.registerToExistingBusiness);
+
+
 // התחברות – מחזיר access + refresh token
 router.post("/login", userController.loginUser);
 

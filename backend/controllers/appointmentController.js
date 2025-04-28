@@ -153,7 +153,105 @@ const bookAppointment = async (req, res) => {
     });
   }
 };
-;
+
+const completeAppointment = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const appointment = await Appointment.findById(id);
+    if (!appointment) {
+      return res.status(404).json({ message: "Appointment not found" });
+    }
+
+    appointment.status = 'completed';
+    appointment.checkInTime = new Date();
+    await appointment.save();
+
+    res.status(200).json({ message: "Appointment marked as completed" });
+  } catch (err) {
+    console.error("Complete appointment error:", err);
+    res.status(500).json({ message: "Failed to complete appointment" });
+  }
+};
+
+// controllers/appointmentController.js
+const checkinAppointment = async (req, res) => {
+  try {
+    const { phone } = req.body;
+
+    const customer = await Customer.findOne({ phone });
+    if (!customer) {
+      return res.status(404).json({ message: "Customer not found" });
+    }
+
+    const today = new Date().toISOString().split("T")[0];
+
+    const appointments = await Appointment.find({
+      business: customer.business,
+      customer: customer._id,
+      date: today,
+      status: 'scheduled'
+    });
+
+    const now = new Date();
+    const appointment = appointments.find(appt => {
+      const [hours, minutes] = appt.time.split(":").map(Number);
+      const appointmentTime = new Date(now);
+      appointmentTime.setHours(hours, minutes, 0, 0);
+
+      const diffMinutes = Math.abs((appointmentTime - now) / (1000 * 60));
+      return diffMinutes <= 120; // טווח של שעתיים
+    });
+
+    if (!appointment) {
+      return res.status(404).json({ message: "No matching appointment found" });
+    }
+
+    appointment.status = 'completed';
+    appointment.checkInTime = new Date();
+    await appointment.save();
+
+    res.status(200).json({ message: "Check-in successful" });
+  } catch (err) {
+    console.error("Check-in error:", err);
+    res.status(500).json({ message: "Failed to check in" });
+  }
+};
+
+// controllers/appointmentController.js
+const cancelAppointment = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { reopen } = req.body; // אופציונלי
+
+    const appointment = await Appointment.findById(id);
+    if (!appointment) {
+      return res.status(404).json({ message: "Appointment not found" });
+    }
+
+    appointment.status = 'canceled';
+    await appointment.save();
+
+    if (reopen) {
+      await Appointment.create({
+        business: appointment.business,
+        date: appointment.date,
+        time: appointment.time,
+        service: appointment.service,
+        servicePrice: appointment.servicePrice,
+        serviceDuration: appointment.serviceDuration,
+        status: 'available',
+      });
+    }
+
+    res.status(200).json({ message: "Appointment canceled successfully" });
+  } catch (err) {
+    console.error("Cancel appointment error:", err);
+    res.status(500).json({ message: "Failed to cancel appointment" });
+  }
+};
+
+
 
 
 
@@ -166,5 +264,8 @@ module.exports = {
   updateAppointmentStatus,
   deleteAppointment,
   getAvailableAppointments,
-  bookAppointment
+  bookAppointment,
+  completeAppointment,
+  checkinAppointment,
+  cancelAppointment
 };
