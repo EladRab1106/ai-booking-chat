@@ -14,6 +14,8 @@ import Signup from "./pages/SignUp";
 import BusinessProfile from "./components/BusinessProfile";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { AuthProvider } from "./context/AuthContext"; // ⬅️ ייבוא ה-AuthProvider
+import CancelAppointment from "./pages/CancelAppointment";
+
 
 function App() {
   const handleCreateBusiness = async () => {
@@ -42,6 +44,7 @@ function App() {
                 </ProtectedRoute>
               }
             />
+            <Route path="/cancel-appointment/:id" element={<CancelAppointment />} />
           </Routes>
 
           {/* ⚙️ כפתור זמני למפתחים */}
