@@ -1,5 +1,8 @@
 const Appointment = require("../models/Appointment");
 const Customer = require('../models/Customer');
+const { sendSMS } = require("../services/sendSMS");
+const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:3000"; 
+
 
 
  const createAppointment = async (req, res) => {
@@ -112,27 +115,27 @@ const getAvailableAppointments = async (req, res) => {
 const bookAppointment = async (req, res) => {
   try {
     const { appointmentId } = req.params;
-    const { name, phone, businessId, service } = req.body; // ⬅️ קלט שירות מהבקשה
+    const { name, phone, businessId, service } = req.body;
 
-    // שלב 1: בדוק אם לקוח קיים
+    // 1. בדוק אם לקוח קיים
     let customer = await Customer.findOne({ phone, business: businessId });
 
     if (!customer) {
       customer = await Customer.create({ name, phone, business: businessId });
     }
 
-    // שלב 2: עדכן את התור, כולל השירות הנבחר
+    // 2. עדכן את התור
     const updated = await Appointment.findByIdAndUpdate(
       appointmentId,
       {
         status: 'scheduled',
         customer: customer._id,
-        service: service || 'לא צויין שירות', // ⬅️ מעדכן את השדה החשוב הזה
+        service: service || 'לא צויין שירות',
       },
       { new: true }
     );
 
-    // שלב 3: שמור את התור בפרופיל הלקוח
+    // 3. עדכן את הלקוח
     await Customer.findByIdAndUpdate(customer._id, {
       $push: {
         appointments: {
@@ -145,8 +148,19 @@ const bookAppointment = async (req, res) => {
       $set: { lastVisit: new Date() }
     });
 
+    // 4. שלח SMS
+    const appointmentDate = updated.date;
+    const appointmentTime = updated.time;
+    const cancelLink = `${FRONTEND_URL}/cancel-appointment/${updated._id}`; // קישור ביטול
+
+    const message = `📅 שלום ${name}, התור שלך ל-${service} נקבע ל-${appointmentDate} בשעה ${appointmentTime}.
+במידה ואינך יכול להגיע, ניתן לבטל כאן: ${cancelLink}`;
+
+    await sendSMS(phone, message);
+
     res.status(200).json(updated);
   } catch (error) {
+    console.error("Failed to book appointment:", error.message);
     res.status(500).json({
       message: "Failed to book appointment",
       error: error.message
